@@ -11,6 +11,17 @@ npm ci
 npm run dev
 ```
 
+Para actualizar el código desde GitHub antes de arrancar:
+
+```sh
+git switch main
+git pull --ff-only
+npm ci
+npm run dev
+```
+
+`npm ci` instala las dependencias; no descarga cambios del código. No hace falta crear un commit para arrancar o actualizar la web. El archivo `supabase/7dsorigin.db` y la carpeta `supabase/import/` son entradas locales de la importación, están ignorados por Git y no deben añadirse para ejecutar la aplicación. Abre la raíz `/`: la ruta `/?legacy=1` muestra expresamente la interfaz de la primera versión.
+
 El proyecto remoto utilizado es `gffnzmouzkmpnzmyzvzw` (SevenDeadlySins Equipo, Pablos's Org, eu-west-3). La conexión local está en `.env`, que no se publica en Git. Para otro checkout, copiar `.env.example` a `.env` y configurar la URL y la clave publicable. Nunca usar claves secretas o service_role en Vite.
 
 Sin variables se utiliza la copia estática del catálogo y almacenamiento local de formaciones. Con Supabase se consulta el catálogo remoto y se comprueba que su SHA coincide con esta versión. Las fichas de cada héroe se cargan bajo demanda. El modo local no aísla usuarios que comparten un perfil del navegador. Las cuentas guardan directamente en la BD; no se suben automáticamente las formaciones locales.
@@ -88,6 +99,6 @@ El cliente incluye registro, confirmación por correo, inicio y cierre de sesió
 
 En Vercel: proyecto Vite, build `npm run build`, salida `dist` y las dos variables públicas de Supabase. El despliegue en Vercel y la prueba de alta con correo real quedan pendientes.
 
-`main` contiene la primera versión, ya fusionada en PR #1. Esta entrega usa `codex/catalogo-supabase-formaciones` y un PR separado. No se ha fusionado esta rama. Fase 2: capturas/OCR con revisión antes de guardar, tras decidir conservación de imágenes y método de reconocimiento.
+`main` es la rama para ejecutar la versión integrada. Los cambios se revisan en ramas `codex/*` y PR antes de fusionarlos: PR #1 (primera versión), PR #2 (catálogo y editor de cuatro héroes) y PR #3 (comprobación diaria de Supabase). Fase 2: capturas/OCR con revisión antes de guardar, tras decidir conservación de imágenes y método de reconocimiento.
 
 Proyecto de fans sin afiliación a Netmarble. Las imágenes y personajes pertenecen a sus titulares; se conserva la procedencia de los datos.
