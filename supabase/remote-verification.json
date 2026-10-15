@@ -1,0 +1,151 @@
+{
+  "checkedAt": "2026-10-15T19:28:22.046Z",
+  "project": "gffnzmouzkmpnzmyzvzw",
+  "tables": [
+    {
+      "table": "metadatos",
+      "count": 3
+    },
+    {
+      "table": "elementos",
+      "count": 8
+    },
+    {
+      "table": "roles",
+      "count": 4
+    },
+    {
+      "table": "rarezas",
+      "count": 5
+    },
+    {
+      "table": "tipos_arma",
+      "count": 12
+    },
+    {
+      "table": "estadisticas",
+      "count": 109
+    },
+    {
+      "table": "personajes",
+      "count": 28
+    },
+    {
+      "table": "personaje_armas",
+      "count": 84
+    },
+    {
+      "table": "habilidades",
+      "count": 504
+    },
+    {
+      "table": "habilidad_efectos",
+      "count": 621
+    },
+    {
+      "table": "potenciales",
+      "count": 840
+    },
+    {
+      "table": "maestria_niveles",
+      "count": 420
+    },
+    {
+      "table": "maestria_subniveles",
+      "count": 1008
+    },
+    {
+      "table": "maestria_ramas",
+      "count": 4788
+    },
+    {
+      "table": "maestria_comun",
+      "count": 84
+    },
+    {
+      "table": "atuendos",
+      "count": 157
+    },
+    {
+      "table": "grabados",
+      "count": 303
+    },
+    {
+      "table": "trascendencias",
+      "count": 252
+    },
+    {
+      "table": "rafagas",
+      "count": 8
+    },
+    {
+      "table": "habilidades_combinadas",
+      "count": 716
+    },
+    {
+      "table": "banners",
+      "count": 30
+    },
+    {
+      "table": "efectos",
+      "count": 228
+    },
+    {
+      "table": "efectos_codice",
+      "count": 298
+    },
+    {
+      "table": "armas",
+      "count": 170
+    },
+    {
+      "table": "arma_grados",
+      "count": 290
+    },
+    {
+      "table": "arma_encantamientos",
+      "count": 1086
+    },
+    {
+      "table": "arma_pasiva_niveles",
+      "count": 763
+    },
+    {
+      "table": "armaduras",
+      "count": 281
+    },
+    {
+      "table": "accesorios",
+      "count": 73
+    },
+    {
+      "table": "equipo_stats",
+      "count": 877
+    },
+    {
+      "table": "equipo_talento_niveles",
+      "count": 336
+    },
+    {
+      "table": "equipo_opciones_aleatorias",
+      "count": 2021
+    },
+    {
+      "table": "conjuntos",
+      "count": 24
+    },
+    {
+      "table": "conjunto_piezas",
+      "count": 130
+    },
+    {
+      "table": "conjunto_bonos",
+      "count": 48
+    }
+  ],
+  "checks": [
+    "35 table counts and SHA match SQLite",
+    "Anonymous catalog writes rejected (401)",
+    "Anonymous private plans blocked (401)"
+  ]
+}

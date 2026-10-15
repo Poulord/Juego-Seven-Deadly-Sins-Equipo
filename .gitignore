@@ -9,3 +9,5 @@ playwright-report/
 supabase/.temp/
 output/
 .playwright-cli/
+supabase/*.db
+supabase/import/

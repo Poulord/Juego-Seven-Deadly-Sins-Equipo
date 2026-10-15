@@ -7,7 +7,9 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "catalog:prepare": "node scripts/prepare-catalog.mjs",
+    "catalog:verify": "node scripts/verify-supabase.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.3",

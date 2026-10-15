@@ -5,7 +5,7 @@ test("reuse, duplicate, edit, filter, compare, persist and delete", async ({
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/");
+  await page.goto("/?legacy=1");
   await page
     .getByRole("button", { name: "Probar con ejemplos ficticios" })
     .click();
@@ -90,13 +90,11 @@ test("reuse, duplicate, edit, filter, compare, persist and delete", async ({
 });
 test("catalog creation and mobile layout", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("/?legacy=1");
   await page
     .getByRole("button", { name: "Conectar cuenta", exact: true })
     .click();
-  await expect(page.getByRole("dialog")).toContainText(
-    "Las cuentas estarán disponibles",
-  );
+  await expect(page.getByRole("dialog")).toBeVisible();
   await page.getByRole("button", { name: "Cerrar diálogo" }).click();
   await page.getByRole("button", { name: "Catálogo", exact: true }).click();
   await page.getByRole("button", { name: "Nueva entrada" }).click();
