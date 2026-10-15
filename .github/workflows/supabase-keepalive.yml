@@ -1,0 +1,40 @@
+name: Supabase daily health check
+
+on:
+  schedule:
+    # Daily, off the hour to reduce scheduler congestion. All cron times are UTC.
+    - cron: "17 8 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/supabase-keepalive.yml"
+      - "scripts/supabase-keepalive.mjs"
+      - "tests/supabase-keepalive.test.mjs"
+      - "supabase/healthcheck.json"
+  pull_request:
+    paths:
+      - ".github/workflows/supabase-keepalive.yml"
+      - "scripts/supabase-keepalive.mjs"
+      - "tests/supabase-keepalive.test.mjs"
+      - "supabase/healthcheck.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-health-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Test bounded requests and retries
+        run: node --test tests/supabase-keepalive.test.mjs
+      - name: Read public Supabase catalog
+        run: node scripts/supabase-keepalive.mjs
