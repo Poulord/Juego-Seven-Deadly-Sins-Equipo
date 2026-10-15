@@ -1,17 +1,32 @@
 # Origin Forge — Seven Deadly Sins: Origin
 
-Planificador de formaciones de cuatro héroes. React + TypeScript + Vite, catálogo compartido de solo lectura y configuraciones privadas en Supabase.
+Aplicación web en español para **planificar, guardar y comparar equipos de hasta cuatro héroes**. Permite preparar configuraciones de armas, armaduras, accesorios y grabados, consultar sus aportes y estudiar los ataques combinados del grupo.
 
-## Ejecutar
+## Funcionalidades
 
-Requiere Node 24 y npm.
+- Selección de héroes SR y SSR, con búsqueda, filtros y estilos de combate.
+- Configuración individual de armas compatibles, armaduras, accesorios y armadura ligada.
+- Selección de encantamientos, atributos aleatorios, pasivas, talentos y grabados según los datos disponibles.
+- Resumen del equipo, aportes de equipamiento por héroe, bonificaciones de conjunto y ataques combinados compatibles.
+- Guardado, edición, duplicación, eliminación y favoritos de formaciones independientes.
+- Filtros de formaciones y comparación de hasta tres equipos, con exportación en JSON.
+- Consulta de habilidades, maestría, potencial y trascendencia.
+- Interfaz inspirada en el juego, con retratos, imágenes de armas, transiciones y partículas. Adaptada a móvil y a la preferencia de movimiento reducido.
+
+El catálogo es de solo lectura. Cada formación conserva su propia configuración: reutilizar una pieza o modificar un equipo no altera los demás planes ni las características del catálogo.
+
+## Requisitos y ejecución
+
+Requiere **Node.js 24** y npm. Desde la carpeta del proyecto:
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Para actualizar el código desde GitHub antes de arrancar:
+Abre la dirección que muestra Vite en la terminal. La aplicación principal está en `/`.
+
+Para descargar la versión integrada antes de arrancar:
 
 ```sh
 git switch main
@@ -20,85 +35,99 @@ npm ci
 npm run dev
 ```
 
-`npm ci` instala las dependencias; no descarga cambios del código. No hace falta crear un commit para arrancar o actualizar la web. El archivo `supabase/7dsorigin.db` y la carpeta `supabase/import/` son entradas locales de la importación, están ignorados por Git y no deben añadirse para ejecutar la aplicación. Abre la raíz `/`: la ruta `/?legacy=1` muestra expresamente la interfaz de la primera versión.
+`git pull` descarga el código; `npm ci` instala sus dependencias. **No hace falta crear un commit para ejecutar o actualizar la aplicación.** Si el servidor ya estaba abierto, detenlo y arráncalo de nuevo después de actualizar.
 
-El proyecto remoto utilizado es `gffnzmouzkmpnzmyzvzw` (SevenDeadlySins Equipo, Pablos's Org, eu-west-3). La conexión local está en `.env`, que no se publica en Git. Para otro checkout, copiar `.env.example` a `.env` y configurar la URL y la clave publicable. Nunca usar claves secretas o service_role en Vite.
+## Configuración de Supabase
 
-Sin variables se utiliza la copia estática del catálogo y almacenamiento local de formaciones. Con Supabase se consulta el catálogo remoto y se comprueba que su SHA coincide con esta versión. Las fichas de cada héroe se cargan bajo demanda. El modo local no aísla usuarios que comparten un perfil del navegador. Las cuentas guardan directamente en la BD; no se suben automáticamente las formaciones locales.
+Copia `.env.example` a `.env` y configura las variables públicas del proyecto:
 
-## Catálogo importado el 15 de octubre de 2026
+```dotenv
+VITE_SUPABASE_URL=https://<referencia-del-proyecto>.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=<clave-publicable>
+```
 
-Origen: el archivo `supabase/7dsorigin.db` proporcionado por el usuario. Fuente declarada por el archivo: https://7dsorigin.app/es. SHA-256: `5932833c3b75996d35e8fc1f61c77eda7935b1191f94797a58a4d0504440e1b8`.
+El archivo `.env` está ignorado por Git. Las variables `VITE_*` se incluyen en el navegador: utiliza exclusivamente la clave publicable, nunca una clave secreta o `service_role`.
 
-Se importaron las **35 tablas y 16.609 registros**, manteniendo los campos originales, claves primarias y referencias declaradas. Los nombres PostgreSQL llevan el prefijo `game_` para separarlos de los planes privados. Los campos JSON de origen permanecen sin pérdida como texto. `habilidades.dano_pct_atq` contenía expresiones como `25% ATK` pese a estar declarado REAL en SQLite; una migración lo conserva como texto.
+- **Con Supabase:** la aplicación consulta el catálogo remoto y las cuentas guardan sus formaciones privadas en la base de datos. Se comprueba que la versión del catálogo coincida con la incluida en la aplicación.
+- **Sin configuración:** utiliza el catálogo incluido en el proyecto y guarda las formaciones en el navegador mediante `localStorage`.
 
-- 28 personajes (18 SSR y 10 SR), con 84 estilos de arma.
-- 170 armas, 290 grados, 1.086 encantamientos y 763 niveles de pasiva.
-- 281 armaduras, 73 accesorios, 877 estadísticas de piezas y 2.021 opciones aleatorias.
-- 24 conjuntos y 48 umbrales de bonificación.
-- 303 niveles de grabado, 504 habilidades y 716 combinaciones.
-- Maestrías, potenciales, trascendencias, atuendos, efectos, ráfagas y diccionarios de referencia: todos conservados en Supabase.
+Los planes locales no se transfieren automáticamente a una cuenta. El almacenamiento local se comparte entre quienes usen el mismo perfil del navegador.
 
-`supabase/catalog-audit.json` contiene los recuentos completos y limitaciones. La verificación real mediante REST y clave publicable contrastó los recuentos de las 35 tablas, el SHA de la versión y el rechazo de escrituras anónimas al catálogo y de acceso anónimo a planes privados. La auditoría de seguridad de Supabase no devolvió avisos. El asesor de rendimiento solo informó índices recién creados sin uso todavía; no es un fallo de la carga.
+Para el registro y la confirmación por correo, configura en Supabase Auth la **Site URL** y las **Redirect URLs** del dominio de la aplicación y del entorno local, normalmente `http://127.0.0.1:5173`.
 
-## Organización y privacidad
+## Catálogo y base de datos
 
-- `game_*`: catálogo común, lectura por anon/authenticated y escritura reservada a administración. RLS en todas las tablas.
-- `game_imports`: huella de origen, fecha de extracción, recuentos y estado de la primera importación; solo se marcó lista tras verificar todos los recuentos.
-- `party_plans`: instantáneas privadas de formaciones de hasta cuatro héroes, indexadas por propietario/fecha. Las políticas SELECT/INSERT/UPDATE/DELETE comprueban el propietario; UPDATE incluye WITH CHECK.
-- `teams` y `catalog_entries`: conservan los planes manuales de la primera versión. Acceso desde «Planes de la primera versión», ruta `/?legacy=1`. No se han eliminado ni migrado destructivamente los datos anteriores.
+El catálogo actual contiene 28 héroes, 84 estilos de arma, 170 armas, 281 armaduras, 73 accesorios y 24 conjuntos. También incluye habilidades, ataques combinados, grabados, encantamientos y datos de progresión.
 
-Se añadieron índices B-tree para relaciones, tipos de arma, rarezas, ranuras y búsquedas por pieza (`tabla,equipo_id`), además de GIN para nombres. Los usuarios no pueden modificar el catálogo de referencia desde la nueva interfaz.
+| Tablas | Función |
+| --- | --- |
+| `game_*` | Catálogo compartido, con lectura pública y escritura reservada a administración. |
+| `game_imports` | Versión, huella y estado de las cargas del catálogo. |
+| `party_plans` | Configuraciones privadas de formaciones, vinculadas a su propietario. |
+| `teams`, `catalog_entries` | Compatibilidad con planes manuales anteriores, accesibles en `/?legacy=1`. |
 
-Cada formación guarda copias de personajes, estilos, piezas, atributos elegidos, grabados, talentos y reglas de conjunto. Una pieza puede usarse en cualquier número de planes. Duplicar y editar una formación no modifica otra ni el catálogo. Cambiar el estilo de arma retira el arma incompatible de esa configuración.
+Las políticas RLS protegen las operaciones de cada propietario y la inmutabilidad del catálogo para los usuarios. Las relaciones y los campos de búsqueda cuentan con índices para las consultas del editor.
 
-## Editor y presentación
-
-- Selector con los 28 héroes, búsqueda y filtro SR/SSR; evita repetir un héroe dentro del grupo.
-- Cuatro puestos de formación y selección individual de estilo de combate.
-- Armas compatibles con el estilo, selección de grado y valores de origen base/máximo.
-- Armaduras, accesorios y armadura ligada en sus ranuras correspondientes.
-- Encantamientos dentro de rangos, atributos aleatorios cuando el catálogo declara el número de ranuras, pasivas por nivel, talentos únicos y grabados por héroe/nivel.
-- Panel de aportes de las piezas, umbrales de conjunto activos/inactivos y referencia de efectos.
-- Información del equipo por héroe y ataques combinados que coinciden exactamente con héroes y estilos elegidos.
-- Guardar, duplicar, eliminar, favoritos, filtros, comparación de hasta tres formaciones y exportación JSON.
-- Catálogo de consulta con habilidades, grabados, potencial, maestría y trascendencia.
-- Retratos y armas usando las URLs presentes en la BD. La BD no incluye URLs de imagen de todas las armaduras: esas ranuras usan símbolos, sin inventar rutas.
-- Diseño inspirado en las capturas: tonos azul noche/dorado, panel de información claro, selección azul, retratos, transición de héroe y partículas. Fondo a partir de la captura proporcionada por el usuario. No se incluyen modelos 3D ni animaciones extraídas del juego. Respeta prefers-reduced-motion y se adapta a móvil.
-
-## Límites de los cálculos
-
-La BD **no contiene una tabla de estadísticas base de cada héroe por nivel**, ni una fórmula completa y validada de combate. Por eso la interfaz muestra **aportes de equipamiento**, no inventa los totales finales ni el poder de combate. No suma porcentajes entre héroes.
-
-Los valores codificados `Rate` (p. ej. encantamientos) se almacenan en centésimas de porcentaje; las estadísticas de armadura de `equipo_stats` ya vienen en unidades de visualización. Las secundarias de arma se convierten según el diccionario canónico de estadísticas. No se interpolan niveles o calidades intermedias: se elige explícitamente el extremo base o máximo disponible.
-
-Las bonificaciones de conjunto se detectan por número de piezas y se muestran con sus condiciones. Los efectos narrativos/condicionales, maestrías, potencial y trascendencia se pueden consultar; no se evalúan automáticamente ni se añaden al aporte de piezas. Los valores intermedios de refuerzo, progresión base y un motor completo requieren más datos y validación con el juego.
-
-## Regenerar y verificar
+### Preparar y verificar el catálogo
 
 ```sh
 npm run catalog:prepare
 npm run catalog:verify
+```
+
+`catalog:prepare` requiere el archivo local `supabase/7dsorigin.db`. Lo abre en modo de solo lectura, comprueba integridad y claves foráneas, y genera el catálogo de consulta, las fichas de héroes y los lotes SQL de importación. **No sube datos automáticamente.**
+
+El archivo SQLite y los lotes de `supabase/import/` están ignorados por Git y no son necesarios para arrancar la web con el catálogo ya generado.
+
+Para preparar una base vacía, aplica las migraciones de `supabase/migrations/` en orden y después los lotes del manifiesto generado, deteniéndote ante cualquier error. Las actualizaciones de un catálogo en uso deben validarse en un entorno de pruebas antes de promover una nueva versión.
+
+`catalog:verify` utiliza la configuración pública de `.env` para contrastar los recuentos y la versión del catálogo, así como las restricciones de acceso anónimo. Guarda el informe en `output/supabase-verification.json`.
+
+### Comprobación periódica
+
+GitHub Actions ejecuta diariamente una comprobación de Supabase mediante tres consultas pequeñas de solo lectura al catálogo. También puede ejecutarse manualmente:
+
+```sh
+node scripts/supabase-keepalive.mjs
+```
+
+La configuración y el funcionamiento están documentados en [Mantenimiento de Supabase](docs/supabase-keepalive.md). Esta actividad periódica no garantiza disponibilidad permanente: depende de la ejecución de GitHub Actions y de las condiciones del plan de Supabase.
+
+## Alcance de las estadísticas
+
+La aplicación muestra **aportes del equipamiento por héroe**. El catálogo disponible todavía no contiene las estadísticas base de cada personaje por nivel ni todas las fórmulas de combate, por lo que no se presentan como estadísticas finales o poder de combate del equipo.
+
+Las bonificaciones de conjunto se detectan por número de piezas y muestran sus condiciones. Los efectos condicionales, la maestría, el potencial y la trascendencia pueden consultarse, pero no se incorporan automáticamente al cálculo. Tampoco se suman porcentajes entre héroes ni se interpolan niveles intermedios sin datos validados.
+
+## Pruebas
+
+```sh
+# Dominio, migraciones y políticas de acceso
 npm test
+
+# Comprobación periódica de Supabase
+node --test tests/supabase-keepalive.test.mjs
+
+# TypeScript y compilación de producción
 npm run build
+
+# Flujos completos en navegador
 npx playwright install chromium
 npm run test:e2e
 ```
 
-`catalog:prepare` lee SQLite en modo solo lectura, comprueba integridad/FK, genera copia de consulta, fichas por héroe, manifiesto y lotes SQL reanudables en `supabase/import/`. El archivo SQLite y los lotes están ignorados por Git. No modifica el archivo original.
+Las pruebas cubren compatibilidad de piezas, unidades y rangos, independencia de las formaciones, conjuntos, ataques combinados y aislamiento entre propietarios. Los flujos de navegador comprueban la creación y edición del equipo, el guardado, la recarga y la vista móvil. GitHub Actions ejecuta las comprobaciones configuradas en el repositorio.
 
-Las tres migraciones están en `supabase/migrations`. Para recrear un proyecto vacío, aplicar todas en orden y después los lotes del manifiesto generado en orden; detenerse ante cualquier error. Los lotes usan UPSERT por las claves de origen. La generación no sube datos automáticamente ni necesita credenciales. El patrón está preparado para esta primera carga: actualizar un catálogo de producción exige preparar una nueva versión en staging y promoverla de forma atómica, sin sobrescribir directamente la versión en uso.
+## Tecnologías y despliegue
 
-`catalog:verify` necesita `.env`, usa exclusivamente la clave publicable y guarda un informe en `output/supabase-verification.json`. Comprueba también el rechazo de operaciones anónimas; no crea usuarios ni envía correos.
+React, TypeScript y Vite para la interfaz; Supabase Auth y PostgreSQL para cuentas y persistencia; Vitest, PGlite y Playwright para las pruebas.
 
-Las pruebas de dominio cubren cobertura, unidades, extremos, compatibilidad, copias independientes, conjuntos y ataques combinados. Las pruebas PGlite ejecutan las migraciones y verifican aislamiento entre dos propietarios y catálogo inmutable. E2E comprueba la formación real de cuatro héroes, piezas, cambio de estilo, grabados, resumen, duplicación independiente, recarga y móvil; también mantiene los flujos de la primera versión. GitHub Actions ejecuta pruebas y build.
+Para desplegar en Vercel, selecciona Vite, utiliza `npm run build` como comando de compilación y `dist` como directorio de salida. Configura las dos variables públicas de Supabase y las URL de autenticación del dominio final. El despliegue y la confirmación real por correo deben verificarse en ese entorno.
 
-## Cuentas y despliegue
+## Próximas mejoras
 
-El cliente incluye registro, confirmación por correo, inicio y cierre de sesión. Antes de producción, configurar en Supabase Auth la Site URL y Redirect URLs del dominio final y del origen local (`http://127.0.0.1:5173`). No se han enviado correos ni creado cuentas personales para probar el alta; la entrega verifica RLS local y permisos REST remotos, no el envío real de confirmaciones.
+- Incorporar estadísticas base y reglas de combate verificadas para ampliar el resumen del equipo.
+- Ampliar las imágenes de equipamiento y la presentación visual.
+- Añadir importación mediante capturas y reconocimiento de texto, con revisión antes de guardar.
 
-En Vercel: proyecto Vite, build `npm run build`, salida `dist` y las dos variables públicas de Supabase. El despliegue en Vercel y la prueba de alta con correo real quedan pendientes.
-
-`main` es la rama para ejecutar la versión integrada. Los cambios se revisan en ramas `codex/*` y PR antes de fusionarlos: PR #1 (primera versión), PR #2 (catálogo y editor de cuatro héroes) y PR #3 (comprobación diaria de Supabase). Fase 2: capturas/OCR con revisión antes de guardar, tras decidir conservación de imágenes y método de reconocimiento.
-
-Proyecto de fans sin afiliación a Netmarble. Las imágenes y personajes pertenecen a sus titulares; se conserva la procedencia de los datos.
+Proyecto de fans sin afiliación a Netmarble. Los personajes y las imágenes pertenecen a sus respectivos titulares.
